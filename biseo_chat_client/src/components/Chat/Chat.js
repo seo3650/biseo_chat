@@ -2,32 +2,33 @@ import React, { useState, useEffect } from 'react';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 
-import InfoBar from '../InfoBar/InfoBar'
+import Messages from '../Messages/Messages';
+import Input from '../Input/Input';
+import OnlineUserList from '../OnlineUserList/OnlineUserList';
+
+
+import './Chat.css';
+import { getToken } from '../../utils/auth';
 
 let socket;
 
 const Chat = ( { location } ) => {
     const [name, setName] = useState('');
-    // const [room, setRoom] = useState('');
+    const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState('');
-    const ENDPOINT = 'http://ssal.sparcs.org:44131';
+    const ENDPOINT = 'http://moby.sparcs.org:44431';
 
     useEffect(() => {
         const { name, room } = queryString.parse(location.search);
-        console.log("name: " + name); // TODO: DELETE IT
-        // console.log("room: " + room); // TODO: DELETE IT
-        socket = io.connect(ENDPOINT);
-        
-        setName(name);
-        // setRoom(room);
-
-        socket.emit('join', { name: name }, (error) => {
-            if (error) {
-                alert(error);
-            }
+        socket = io.connect(ENDPOINT, {
+            query: `token=${getToken()}`
         });
 
+        socket.on('name', (name) => {
+            setName(name);
+        });
+        
         return () => {
             socket.emit('disconnect');
             socket.off();
@@ -38,6 +39,10 @@ const Chat = ( { location } ) => {
         socket.on('message', (message) => {
             setMessages([...messages, message])
         });
+
+        socket.on("roomData", ({ users }) => {
+            setUsers(users);
+          });
     }, [messages])
 
     const sendMessage = (event) => {
@@ -46,16 +51,15 @@ const Chat = ( { location } ) => {
         if (message) {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
-    };
-
-    console.log(message, messages); // TODO: DEBUG
+};
 
     return (
         <div className = 'outerContainer'>
             <div className = 'container'>
-                <InfoBar />
-                a
+                <Messages messages = {messages} name = {name}/>
+                <Input message = {message} setMessage = {setMessage} sendMessage = {sendMessage} />
             </div>
+            <OnlineUserList users={users}/>
         </div>
     );
 }

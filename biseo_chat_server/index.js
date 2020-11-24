@@ -1,35 +1,74 @@
 const http = require('http');
-const express = require('express');
 const socketio = require('socket.io');
-const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const {addUser,removeUser,getUser} = require ('./user');
+const {addUser,removeUser,getUser,getUsersInRoom,isDuplicatedUser} = require ('./user');
 
-const app = express();
-const router = require('./router');
+const app = require('./app');
 const server = http.createServer(app);
 const portNo = 3001;
-const serverAddr = "http://ssal.sparcs.org";
+const serverAddr = "http://moby.sparcs.org";
+const room = "CHAT ROOM";
+const moment = require('moment');
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
 
-app.use(cors());
-app.use(router);
+const jwt = require('jsonwebtoken');
+const { SSL_OP_NO_TICKET } = require('constants');
 
 server.listen(portNo, () => console.log('Server Listen: ', serverAddr + ":" + portNo));
 const io = socketio.listen(server);
 
 io.on('connect', (socket) => {
-    socket.on('join', ({ name }, callback) => {
-        const {error,user} = addUser({id: socket.id,name});
+    let decoded = ''
+    try {
+        decoded = jwt.verify(socket.handshake.query['token'], process.env.JWT_SECRET);
+    } catch (err) {}
+    
+    const name = decoded.sparcs_id;
+    
+    if (isDuplicatedUser(name)) {
+        socket.disconnect();
+    }
+    const { error, user } = addUser({ id: socket.id, name, room: 'CHATROOM' });
+    
+    socket.join('CHATROOM');
+    socket.emit('name', {
+        name
+    });
+    socket.emit('message', { 
+        user: 'admin', 
+        text: `${name}, welcome to chat service`,
+        time: moment().format('MM-DD HH:mm:ss')
+        });
+    socket.broadcast.to('CHATROOM').emit('message', { user: 'admin', text: `${name} has joined!` });
 
-        if(error) {return callback(error);}
-        
+    io.to('CHATROOM').emit('roomData', {  
+        room: 'CHATROOM', 
+        users: getUsersInRoom('CHATROOM'), 
     });
 
-    socket.on('sendMessage', (message, callback) => {
+//callback();
 
+    socket.on('sendMessage', (message, callback) => {
+        const user = getUser(socket.id);
+        
+        io.to(user.room).emit('message', { 
+            user: user.name, 
+            text: message,
+            time: moment().format('MM-DD HH:mm:ss')
+         });
+        
+        callback();
     });
 
     socket.on('disconnect', () => {
+        const user = removeUser(socket.id);
 
+        if(user) {
+            io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.` });
+            io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+        }
     })
 });
