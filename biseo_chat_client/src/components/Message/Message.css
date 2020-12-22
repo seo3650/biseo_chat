@@ -1,0 +1,76 @@
+.messageContainer {
+    display: flex;
+    padding: 0 5%;
+}
+
+.myMessages {
+    align-items: flex-end;
+    flex-direction: row-reverse;
+}
+
+.otherMessages {
+    align-items: flex-end;
+    flex-direction: row;
+}
+
+.nameAndMessageBox {
+    display: flex;
+    flex-direction: column;
+}
+
+.alignEnd {
+    align-items: flex-end;
+}
+
+.alignStart {
+    align-items: flex-start;
+}
+
+.messageText {
+    max-width: 100%;
+    letter-spacing: 0;
+    float: left;
+    font-size: 1.1em;
+    word-wrap: break-word;
+    margin: 10px 2px;
+    border-radius: 20px;
+    padding: 5px 20px;
+    color: #000000;
+    max-width: 80%;
+}
+
+.timeText {
+    margin: 10px;
+
+}
+
+.name {
+    display: inline-block;
+    font-family: Helvetica;
+    color: #000000;
+    letter-spacing: 0.3px;
+    margin: 5px 5px;
+}
+
+.profile {
+    display: inline-block;
+    width: 15%;
+    height: 15%;
+    padding: 20px 0px;
+}
+
+.colorWhilte {
+    color: white;
+}
+
+.colorDark {
+    color: #353535;
+}
+
+.myBackground {
+    background: #FEFBF1;
+}
+
+.otherBackground {
+    background: #F7F6F3;
+}

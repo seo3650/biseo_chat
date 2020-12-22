@@ -2,10 +2,13 @@ import React from 'react';
 
 import ReactEmoji from 'react-emoji';
 
-const Message = ({ message: { user, text }, name }) => {
+import './Message.css';
+import defaultUserProfile from '../../icons/defaultUserProfile.png'
+
+const Message = ({ message: { user, text, time }, name }) => {
     let isSentByUser = false;
 
-    const trimmedName = name.trim().toLowerCase();
+    const trimmedName = typeof name !== 'string' ? null : name.trim().toLowerCase();
     if (user === trimmedName) {
         isSentByUser = true;
     }
@@ -13,19 +16,23 @@ const Message = ({ message: { user, text }, name }) => {
     return (
         isSentByUser
         ? (
-            <div className = "messageContainer justifyEnd">
-                <p className = 'sendText pr-10'>{ trimmedName }</p>
-                <div className = "messageBox backgroundBlue">
-                    <p className = "messageText colorWhite">{ ReactEmoji.emojify(text) }</p>
+            <div className = "messageContainer myMessages">
+                <img className="profile" src={defaultUserProfile} alt="default user profile" />
+                <div className = "nameAndMessageBox alignEnd">
+                    <p className = 'name'>{ trimmedName }</p>
+                    <p className = "messageText myBackground colorWhite">{ ReactEmoji.emojify(text) }</p>
                 </div>
+                <p className = "timeText">{time}</p>
             </div>
         )
         : (
-            <div className = 'messageContainer justifyStart'>
-                <div className = "messageBox backgroundLight">
-                    <p className = "messageText colorDark">{ReactEmoji.emojify(text)}</p>
+            <div className = 'messageContainer otherMessages'>
+                <img className="profile" src={defaultUserProfile} alt="default user profile" />
+                <div className = "nameAndMessageBox alignStart">
+                    <p className ='name'>{user}</p>
+                    <p className = "messageText otherBackground colorDark">{ReactEmoji.emojify(text)}</p>
                 </div>
-                <p className ='sentText pl-10'>{user}</p>
+                <p className = "timeText">{time}</p>
             </div>
         )
     );

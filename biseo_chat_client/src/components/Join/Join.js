@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import './Join.css';
+import axios from '../../utils/axios';
 
 
 
@@ -7,19 +9,24 @@ import { Link } from 'react-router-dom';
 
 const Join = () => {
     const[name, setName] = useState('');
-    // const[room, setRoom] = useState('');
+    const[room, setRoom] = useState('');
+    const MainRoom = 'CHATROOM';
+
+
+    // useEffect(() => {
+    //     axios.get('/auth/check');
+    // }, []);
 
     return(
-        <div className = 'joinOuterContainer'>
-            <div className = 'joinInnerContainer'>
-                <h1>Join</h1>
-                <div><input placeholder = 'Name' className = 'joinInput'/></div>
-                {/* <div><input placeholder = 'room' className = 'joinInput'/></div> */}
-                {/* <Link onClick = { event => (!name||!room) ? event.preventDefault() : null } to = {'/chat?name='+name+'&room='+room}>
-                    <button className = "button mt-20" type = 'submit'>Sign In</button>
+        <div className = 'OuterContainer'>
+            <div className = 'Container'>
+                <h1>Log In</h1>
+                <div><input placeholder = "Name" className = "joinInput" type = "text" onChange = { (event) => setName(event.target.value) }/></div>
+                {/* <Link onClick = { event => (!name) ? event.preventDefault() : null } to = {'/chat?name='+name+'&room='+MainRoom}>
+                    <button className = "button" type = 'submit'>Sign In</button>
                 </Link> */}
-                <Link onClick = { event => (!name) ? event.preventDefault() : null } to = {'/chat?name='+name}>
-                    <button className = "button mt-20" type = 'submit'>Sign In</button>
+                <Link to = {'/login/redirect'}>
+                    <button className = "ssobutton" type = 'submit' >sso</button>
                 </Link>
             </div>
         </div>
