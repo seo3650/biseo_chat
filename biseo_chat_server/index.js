@@ -47,6 +47,11 @@ io.on('connect', (socket) => {
         users: getUsersInRoom('CHATROOM'), 
     });
 
+<<<<<<< HEAD
+=======
+//callback();
+
+>>>>>>> 9804f65251a34c5980e2fe0c0ca1e3fd8172b4c0
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
         
