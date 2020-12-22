@@ -11,7 +11,6 @@ const LoginCallback = () => {
         query[0] === '?' ? query.slice(1) : query
     );
     const [valid, setValid] = useState(null);
-    const [name, setName] = useState(null);
 
     useEffect(() => {
         axios
@@ -29,8 +28,8 @@ const LoginCallback = () => {
 
 
     if (valid === null) return <div> Loading </div>;
-    else if (valid) return <Redirect to={`/chat?name=undefined&room=CHATROOM`} />;
-    else return <Redirect to="/login" />
+    else if (valid) return <Redirect to={`/chat`} />;
+    else return <Redirect to="/" />
 };
 
 export default LoginCallback;

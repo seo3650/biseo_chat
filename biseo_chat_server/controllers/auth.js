@@ -1,21 +1,5 @@
-const jwt = require('jsonwebtoken');
 const { jwtSign } = require('../utils/jwt.js');
 const client = require('../utils/sso.js');
-
-const authCheck = (req, res) => {
-	const jwtSecret = req.app.get('jwt-secret')
-	const token = req.headers['x-access-token'] || ''
-
-    if (!token)
-        return res.json({ success: false })
-
-	jwt.verify(token.split(' ')[1], jwtSecret, (err, decode) => {
-		if (err) {
-            return res.json({ success: false });
-		}
-        res.json({ success: true })
-	})
-}
 
 const login = (req, res) => {
 	const {url, state} = client.getLoginParams()
@@ -46,7 +30,6 @@ const loginCallback = async (req, res) => {
 }
 
 module.exports = {
-	authCheck: authCheck,
 	login: login,
 	loginCallback: loginCallback
 }

@@ -3,7 +3,7 @@ const socketio = require('socket.io');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {addUser,removeUser,getUser,getUsersInRoom,isDuplicatedUser} = require ('./user');
+const {addUser, removeUser, getUser, getUsers, isDuplicatedUser} = require ('./user');
 
 const app = require('./app');
 const server = http.createServer(app);
@@ -29,9 +29,8 @@ io.on('connect', (socket) => {
     if (isDuplicatedUser(name)) {
         socket.disconnect();
     }
-    const { error, user } = addUser({ id: socket.id, name, room: 'CHATROOM' });
+    ret = addUser({ id: socket.id, name })
     
-    socket.join('CHATROOM');
     socket.emit('name', {
         name
     });
@@ -40,22 +39,17 @@ io.on('connect', (socket) => {
         text: `${name}, welcome to chat service`,
         time: moment().format('MM-DD HH:mm:ss')
         });
-    socket.broadcast.to('CHATROOM').emit('message', { user: 'admin', text: `${name} has joined!` });
+    if (!ret.error)
+        socket.broadcast.emit('message', { user: 'admin', text: `${name} has joined!` });
 
-    io.to('CHATROOM').emit('roomData', {  
-        room: 'CHATROOM', 
-        users: getUsersInRoom('CHATROOM'), 
+    io.emit('roomData', {  
+        users: getUsers() 
     });
 
-<<<<<<< HEAD
-=======
-//callback();
-
->>>>>>> 9804f65251a34c5980e2fe0c0ca1e3fd8172b4c0
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
         
-        io.to(user.room).emit('message', { 
+        io.emit('message', { 
             user: user.name, 
             text: message,
             time: moment().format('MM-DD HH:mm:ss')
@@ -68,8 +62,8 @@ io.on('connect', (socket) => {
         const user = removeUser(socket.id);
 
         if(user) {
-            io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.` });
-            io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+            io.emit('message', { user: 'admin', text: `${user.name} has left.` });
+            io.emit('roomData', { users: getUsers });
         }
     })
 });
