@@ -7,7 +7,6 @@ const instance = axios.create({
 
 instance.interceptors.request.use(config => {
     const token = localStorage.getItem('biseo-jwt')
-    // const token = "sparcs_biseo" // TODO: DELETE IT
     if (token)
       config.headers = {
         'X-Access-Token': `Bearer ${token}`
