@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import axios from '../utils/axios';
 
 const LoginRedirect = () => {

@@ -41,7 +41,6 @@ app.all('*',function(req,res,next){
     next();
 });
 
-
 app.set('jwt-secret', process.env.JWT_SECRET)
 
 app.get('/', (req, res) => {

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import queryString from 'query-string';
 import io from 'socket.io-client';
 
 import Messages from '../Messages/Messages';
 import Input from '../Input/Input';
 import OnlineUserList from '../OnlineUserList/OnlineUserList';
-
 
 import './Chat.css';
 import { getToken } from '../../utils/auth';
@@ -20,7 +18,6 @@ const Chat = ( { location } ) => {
     const ENDPOINT = 'http://moby.sparcs.org:44431';
 
     useEffect(() => {
-        const { name, room } = queryString.parse(location.search);
         socket = io.connect(ENDPOINT, {
             query: `token=${getToken()}`
         });
@@ -37,13 +34,13 @@ const Chat = ( { location } ) => {
 
     useEffect(() => {
         socket.on('message', (message) => {
-            setMessages([...messages, message])
+            setMessages(messages => [...messages, message])
         });
 
         socket.on("roomData", ({ users }) => {
             setUsers(users);
           });
-    }, [messages])
+    }, [])
 
     const sendMessage = (event) => {
         event.preventDefault();
